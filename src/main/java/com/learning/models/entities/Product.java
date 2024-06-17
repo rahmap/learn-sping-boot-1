@@ -1,6 +1,10 @@
 package com.learning.models.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.Length;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -23,12 +27,16 @@ public class Product implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 255)
+    @Length(min = 2, max = 50)
+    @NotEmpty(message = "Name is required")
+    @Column(nullable = false)
     private String name;
 
     @Column(nullable = true, length = 2000)
     private String description;
 
+    @NotNull(message = "Price is required")
+    @Min(value = 0, message = "Price must be positive")
     @Column(nullable = false)
     private double price;
 

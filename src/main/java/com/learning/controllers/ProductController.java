@@ -1,8 +1,13 @@
 package com.learning.controllers;
 
+import com.learning.DTO.ResponseData;
 import com.learning.models.entities.Product;
 import com.learning.services.ProductService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,8 +20,26 @@ public class ProductController {
     }
 
     @PostMapping
-    public Product create (@RequestBody Product product) {
-        return productService.create(product);
+    public ResponseEntity<ResponseData<Product>> create (@Valid @RequestBody Product product, Errors errors) {
+
+        ResponseData<Product> responseData = new ResponseData<>();
+
+        if(errors.hasErrors()) {
+            for (FieldError fieldError : errors.getFieldErrors()) {
+                System.out.println(fieldError.getDefaultMessage());
+                responseData.getMessages().put(fieldError.getField(), fieldError.getDefaultMessage());
+            }
+            responseData.setStatus(false);
+
+            // throw new RuntimeException("Validation Errors");
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
+        }
+        responseData.getMessages().put("success", "Product created successfully.");
+        responseData.setStatus(true);
+        responseData.setPayload(productService.create(product));
+
+        return ResponseEntity.ok(responseData);
     }
 
     @GetMapping
@@ -27,5 +50,10 @@ public class ProductController {
     @GetMapping("/{id}")
     public Product find(@PathVariable("id") Long id) {
         return productService.find(id);
+    }
+
+    @GetMapping("/search?name={name}")
+    public Iterable<Product> findByName(@PathVariable("name") String name) {
+        return productService.findByName(name);
     }
 }
