@@ -23,23 +23,30 @@ public class ProductController {
     public ResponseEntity<ResponseData<Product>> create (@Valid @RequestBody Product product, Errors errors) {
 
         ResponseData<Product> responseData = new ResponseData<>();
+        try {
+            if(errors.hasErrors()) {
+                for (FieldError fieldError : errors.getFieldErrors()) {
+                    System.out.println(fieldError.getDefaultMessage());
+                    // responseData.getMessages().put(fieldError.getField(), fieldError.getDefaultMessage());
+                    responseData.setMessage(fieldError.getDefaultMessage());
+                }
+                responseData.setStatus(false);
 
-        if(errors.hasErrors()) {
-            for (FieldError fieldError : errors.getFieldErrors()) {
-                System.out.println(fieldError.getDefaultMessage());
-                responseData.getMessages().put(fieldError.getField(), fieldError.getDefaultMessage());
+                // throw new RuntimeException("Validation Errors");
+
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
             }
+            responseData.setStatus(true);
+            responseData.setMessage("Product created successfully");
+            responseData.setResult(productService.create(product));
+
+            return ResponseEntity.ok(responseData);
+        } catch (Exception e) {
             responseData.setStatus(false);
+            responseData.setMessage("Failed created product");
 
-            // throw new RuntimeException("Validation Errors");
-
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
+            return ResponseEntity.ok(responseData);
         }
-        responseData.getMessages().put("success", "Product created successfully.");
-        responseData.setStatus(true);
-        responseData.setPayload(productService.create(product));
-
-        return ResponseEntity.ok(responseData);
     }
 
     @GetMapping

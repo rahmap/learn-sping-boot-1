@@ -16,11 +16,11 @@ public class Product implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    public Product(String name, Long id, String description, double price) {
-        this.name = name;
+    public Product(Long id, String name, String description, double price) {
         this.id = id;
-        this.description = description;
+        this.name = name;
         this.price = price;
+        this.description = description;
     }
 
     @Id
@@ -29,7 +29,7 @@ public class Product implements Serializable {
 
     @Length(min = 2, max = 50)
     @NotEmpty(message = "Name is required")
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
     @Column(nullable = true, length = 2000)

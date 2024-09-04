@@ -1,11 +1,9 @@
 package com.learning.DTO;
 
-import java.util.HashMap;
-
 public class ResponseData<T> {
     private boolean status;
-    private HashMap<String, String> messages = new HashMap<>();
-    private T payload;
+    private String message;
+    private T result = null;
 
     public boolean isStatus() {
         return status;
@@ -15,19 +13,19 @@ public class ResponseData<T> {
         this.status = status;
     }
 
-    public HashMap<String, String> getMessages() {
-        return messages;
+    public String getMessage() {
+        return this.message;
     }
 
-    public void setMessages(HashMap<String, String> messages) {
-        this.messages = messages;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
-    public T getPayload() {
-        return payload;
+    public T getResult() {
+        return result;
     }
 
-    public void setPayload(T payload) {
-        this.payload = payload;
+    public void setResult(T result) {
+        this.result = result;
     }
 }
